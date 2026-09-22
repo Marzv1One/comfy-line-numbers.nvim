@@ -91,8 +91,10 @@ local DEFAULT_LABELS = {
 local M = {
   config = {
     labels = DEFAULT_LABELS,
-    up_key = 'k',
-    down_key = 'j',
+    keys = {
+      { key = 'j', motion = 'j' },
+      { key = 'k', motion = 'k' },
+    },
     hidden_file_types = { 'undotree' },
     hidden_buffer_types = { 'terminal', 'nofile' }
   }
@@ -158,9 +160,10 @@ function M.enable_line_numbers()
     return
   end
 
-  for index, label in ipairs(M.config.labels) do
-    vim.keymap.set({ 'n', 'v', 'o' }, label .. M.config.up_key, index .. 'k', { noremap = true })
-    vim.keymap.set({ 'n', 'v', 'o' }, label .. M.config.down_key, index .. 'j', { noremap = true })
+  for _, km in ipairs(M.config.keys) do
+    for index, label in ipairs(M.config.labels) do
+      vim.keymap.set({ 'n', 'v', 'o' }, label .. km.key, index .. km.motion, { noremap = true })
+    end
   end
 
   enabled = true
@@ -172,9 +175,10 @@ function M.disable_line_numbers()
     return
   end
 
-  for index, label in ipairs(M.config.labels) do
-    vim.keymap.del({ 'n', 'v', 'o' }, label .. M.config.up_key)
-    vim.keymap.del({ 'n', 'v', 'o' }, label .. M.config.down_key)
+  for _, km in ipairs(M.config.keys) do
+    for _, label in ipairs(M.config.labels) do
+      vim.keymap.del({ 'n', 'v', 'o' }, label .. km.key)
+    end
   end
 
 
